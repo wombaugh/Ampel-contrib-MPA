@@ -1,0 +1,63 @@
+{
+    "MPALENSINGSummary": {
+      "active": true,
+      "schedule": "every(5).minutes",
+      "onError": {
+        "sendMail": {
+          "to": "ztf-software@desy.de",
+          "excStack": true
+        },
+        "stopAmpel": false,
+        "retry": false
+      },
+      "input": {
+        "select": {
+          "created" : {
+                "after" : {
+                    "use": "$timeDelta",
+                    "arguments" : {
+                        "days": -40
+                    }
+                }
+            },
+            "modified" : {
+                "after" : {
+                    "use": "$lastRunTime",
+                    "jobName": "ToOSummary"
+                }
+            },
+            "channel(s)": [
+              "MPA_LENSING"
+            ],
+            "withFlag(s)": "INST_ZTF",
+            "withoutFlag(s)": "HAS_ERROR"
+        },
+        "load": {
+          "state": "$latest",
+          "doc(s)": [
+            "TRANSIENT",
+            "COMPOUND",
+            "T2RECORD",
+            "PHOTOPOINT"
+          ],
+	  "t2(s)": [ "SNCOSMO", "CATALOGMATCH","LCQUALITY" ],        
+          "verbose": true
+        },
+        "chunk": 200
+      },
+      "task(s)": [
+        {
+          "name": "MPALensing",
+          "t3Unit": "SlackSummaryPublisher",
+          "runConfig": "MPALensing",
+          "updateJournal": false,
+          "select": {
+          "state(s)": "$latest",
+	   "t2(s)": [ "SNCOSMO", "CATALOGMATCH","LCQUALITY" ]        
+          }
+        }
+      ]
+    }
+
+
+}

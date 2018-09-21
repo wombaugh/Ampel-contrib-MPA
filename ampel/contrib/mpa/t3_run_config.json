@@ -1,0 +1,31 @@
+{
+  "SlackSummaryPublisher_MPALensing": {
+    "mycols": [
+      "ztf_name",
+      "ra",
+      "dec",
+      "magpsf",
+      "sgscore1",
+      "rb",
+      "most_recent_detection",
+      "first_detection",
+      "n_detections",
+      "distnr",
+      "distpsnr1",
+      "isdiffpos",
+      "_id"
+    ],
+    "channel(s)": [
+      "MPALensing"
+    ],
+    "excitement_levels": {
+      "Low": 1,
+      "Mid": 5,
+      "High": 10
+    },
+    "Slack_token": "xoxb-243248977794-441794045334-EXTSQjUIt4VYnqxnTdiBBLpG",
+    "Slack_channel": "#ampel",       
+    "full_photometry": true
+  }
+
+}
