@@ -1,0 +1,21 @@
+{
+    "CATALOGMATCH_lensesss": {
+        "t2Unit": "CATALOGMATCH",
+        "runConfig": "lensesss",
+        "author": "mpa",
+        "version": 1.0,
+        "lastChange": "11.09.2018",
+        "private": true,
+        "parameters": {
+            "catalogs": {
+                "my_lenses":{
+                    "use": "extcats",
+                    "catq_kwargs": {
+                                    "ra_key": "myracolumn",
+                                    "dec_key": "mydeccolumn"
+                                },
+                    "rs_arcsec": 3,
+                    "keys_to_append": ["column1","column2"]
+                }
+	}
+}
