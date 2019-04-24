@@ -12,7 +12,12 @@ import logging
 from urllib.parse import urlparse
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
-from catsHTM import cone_search
+import sys
+try:
+	from catsHTM import cone_search
+	doCat = True
+except ImportError:
+	doCat = False
 from ampel.base.abstract.AbsAlertFilter import AbsAlertFilter
 
 class MPALensingFilter(AbsAlertFilter):
@@ -100,8 +105,9 @@ class MPALensingFilter(AbsAlertFilter):
 		self.ps1_max_dist			= run_config['PS1_MAXIMUM_DIST']
                 
 		# technical
-		self.catshtm_path 			= urlparse(base_config['catsHTM.default']).path
-		self.logger.info("using catsHTM files in %s"%self.catshtm_path)
+		if doCat:
+			self.catshtm_path 			= urlparse(base_config['catsHTM.default']).path
+			self.logger.info("using catsHTM files in %s"%self.catshtm_path)
 		self.keys_to_check = (
 			'fwhm', 'elong', 'magdiff', 'nbad', 'distpsnr1', 'sgscore1', 'distpsnr2', 
 			'sgscore2', 'distpsnr3', 'sgscore3', 'isdiffpos', 'ra', 'dec', 'rb', 'ssdistnr')
@@ -284,11 +290,14 @@ class MPALensingFilter(AbsAlertFilter):
 		
 		
 		# check with gaia
-		if self.gaia_rs>0 and self.is_star_in_gaia(latest):
-			self.logger.debug("rejected: within %.2f arcsec from a GAIA start (PM of PLX)" % 
-				(self.gaia_rs))
-			return None
-		
+		if self.gaia_rs>0:
+			if not doCat:
+				sys.exit("Cannot match to Gaia without catsHTM!")	
+			if self.is_star_in_gaia(latest):
+				self.logger.debug("rejected: within %.2f arcsec from a GAIA start (PM of PLX)" % 
+					(self.gaia_rs))
+				return None
+			
 		# congratulation alert! you made it!
 		self.logger.debug("Alert %s accepted. Latest pp ID: %d"%(alert.tran_id, latest['candid']))
 		for key in self.keys_to_check:
