@@ -1,63 +1,71 @@
-{
-    "MPALENSINGSummary": {
-      "active": true,
-      "schedule": "every(5).minutes",
-      "onError": {
-        "sendMail": {
-          "to": "ztf-software@desy.de",
-          "excStack": true
-        },
-        "stopAmpel": false,
-        "retry": false
-      },
-      "input": {
-        "select": {
-          "created" : {
-                "after" : {
-                    "use": "$timeDelta",
-                    "arguments" : {
-                        "days": -40
-                    }
-                }
-            },
-            "modified" : {
-                "after" : {
-                    "use": "$lastRunTime",
-                    "jobName": "ToOSummary"
-                }
-            },
-            "channel(s)": [
-              "MPA_LENSING"
-            ],
-            "withFlag(s)": "INST_ZTF",
-            "withoutFlag(s)": "HAS_ERROR"
-        },
-        "load": {
-          "state": "$latest",
-          "doc(s)": [
-            "TRANSIENT",
-            "COMPOUND",
-            "T2RECORD",
-            "PHOTOPOINT"
-          ],
-	  "t2(s)": [ "SNCOSMO", "CATALOGMATCH","LCQUALITY" ],        
-          "verbose": true
-        },
-        "chunk": 200
-      },
-      "task(s)": [
-        {
-          "name": "MPALensing",
-          "t3Unit": "SlackSummaryPublisher",
-          "runConfig": "MPALensing",
-          "updateJournal": false,
-          "select": {
-          "state(s)": "$latest",
-	   "t2(s)": [ "SNCOSMO", "CATALOGMATCH","LCQUALITY" ]        
+[
+  {
+    "job": "MPAlenscat",
+    "schedule": "every().day.at('15:45')",
+    "transients": {
+      "select": {
+        "modified": {
+          "after": {
+            "use": "$timeLastRun",
+            "event": "MPAlenscat"
           }
+        },
+        "channels": "MPA_catalogmatch",
+        "withFlags": "INST_ZTF",
+        "withoutFlags": "HAS_ERROR"
+      },
+      "state": "$latest",
+      "content": {
+        "docs": [
+          "TRANSIENT",
+          "COMPOUND",
+          "T2RECORD",
+          "PHOTOPOINT",
+          "UPPERLIMIT"
+        ],
+        "t2SubSelection": [
+          "CATALOGMATCH"
+        ]
+      }
+    },
+    "tasks": [
+      {
+        "task": "MPAToSlacklenscat",
+        "unitId": "SlackSummaryPublisher",
+        "transients": {
+          "select": {
+            "scienceRecords": {
+              "unitId": "CATALOGMATCH",
+              "runConfig	": "mpalensing",
+              "match": {
+                "MPAlensing.dec": {
+                  "$gt": -361
+                }
+              }
+            }
+          }
+        },
+        "runConfig": {
+          "excitement": {
+            "Low": 1,
+            "Mid": 2,
+            "High": 3
+          },
+          "slackToken": {
+            "salt": "eHSC0v8Pvaw=",
+            "iter": 10000,
+            "ks": 128,
+            "ct": "jKsuPfCjkD6PwbnD9GnZKm/Y18Qzw8J1R+eXa6avIKXJkAeg20mIC1F56E8Joj36wO3w6y0/ebB46RCdD1pH",
+            "iv": "0PP2Glp+pSyUyJIVXSHj/A==",
+            "cipher": "aes",
+            "mode": "ccm",
+            "adata": "",
+            "v": 1,
+            "ts": 64
+          },
+          "slackChannel": "#ampel"
         }
-      ]
-    }
-
-
-}
+      }
+    ]
+  }
+]
