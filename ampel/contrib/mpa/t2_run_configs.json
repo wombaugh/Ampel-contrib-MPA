@@ -17,5 +17,24 @@
                     "rs_arcsec": 3,
                     "keys_to_append": ["column1","column2"]
                 }
-	}
+	},
+    "CATALOGMATCH_mpalensing": {
+        "t2Unit": "CATALOGMATCH",
+        "runConfig": "mpalensing",
+        "author": "ampel-info@desy.de",
+        "version": 1.0,
+        "lastChange": "04.04.2020",
+        "private": false,
+        "parameters": {
+            "catalogs":{
+                "MPAlensing":{
+                    "use": "extcats",
+                    "catq_kwargs": {"ra_key": "ra", "dec_key": "dec"},
+                    "rs_arcsec": 30,
+                    "keys_to_append": ["system_name"]
+                }
+            }
+        }
+    }, 
+
 }
